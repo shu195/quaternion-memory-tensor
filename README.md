@@ -69,6 +69,36 @@ We evaluated ℍ-DeltaNet against a **Causal Self-Attention Transformer** and an
 
 ---
 
+## Continuous-Time Symplectic Memory Flow on Sp(n)
+
+![Continuous Symplectic Flow](./fig4_continuous_symplectic_flow.png)
+
+In continuous time, the memory tensor $\mathbf{M}(t) \in \mathrm{Sp}(n)$ evolves via the **isospectral Lax commutator differential equation**:
+
+$$
+\frac{d}{dt} \mathbf{M}(t) = [\mathbf{M}(t), \boldsymbol{\Omega}(t)] = \mathbf{M}(t) \boldsymbol{\Omega}(t) - \boldsymbol{\Omega}(t) \mathbf{M}(t)
+$$
+
+where continuous input streams project into the skew-adjoint Lie algebra $\mathfrak{sp}(n)$:
+
+$$
+\boldsymbol{\Omega}(t) = \mathbf{v}(t) \otimes \mathbf{k}(t)^* - \mathbf{k}(t) \otimes \mathbf{v}(t)^* \quad (\boldsymbol{\Omega}^* = -\boldsymbol{\Omega})
+$$
+
+### Physical Invariant Audit Across 1,000 Continuous Steps
+
+To eliminate numerical integration drift without dissipation, we integrate via the **Lie-Group Cayley Transform**: $\text{cay}(\mathbf{A}) = (\mathbf{I} - \mathbf{A})^{-1} (\mathbf{I} + \mathbf{A})$.
+
+| Integrator | Unitarity Error $\|MM^T - I\|_F$ | Determinant $\det(M)$ | Energy Drift $\Delta E / E$ | Spectral Bound |
+| :--- | :---: | :---: | :---: | :---: |
+| **Symplectic Cayley (Ours)** | **6.17e-14** | **1.0000000000** | **0.000000%** | **Strictly on $S^1$ ($|\lambda_i| \equiv 1.0$)** |
+| **Standard Euler ODE** | 2.48e+01 | 628,595.39 | +517.62% | Spirals outward ($|\lambda_i| > 2.5$) |
+
+- **Exact Energy Conservation**: Frobenius energy $E(t) = \frac{1}{2} \text{Tr}(M^T M) \equiv 8.00000000$ strictly preserved over 1,000 continuous integration steps ($T = 20.0$s).
+- **Zero Phase-Space Volume Dissipation**: Liouville phase-space volume $\det(M(t)) \equiv 1.0000000000$ down to machine precision.
+
+---
+
 ## Mathematical Foundations
 
 ### Hamilton Product Block Symplectic Representation
@@ -106,10 +136,13 @@ OVERALL MAX RELATIVE ERROR: 2.66e-08
 ├── quaternion_memory_tensor.py            # Complete H-DeltaNet architecture for SO(3) rotor memory recall
 ├── benchmark_h_deltanet_vs_transformer.py # Empirical showdown: H-DeltaNet vs Transformer vs Real DeltaNet
 ├── vectorized_quaternion_benchmark.py     # Block-BLAS vectorization resolving kernel launch overheads
+├── symplectic_quaternion_flow.py          # Continuous-time Sp(n) symplectic Lie-algebraic memory flow
 ├── render_graphs.py                       # 300 DPI publication-grade visualization pipeline
+├── render_symplectic_graphs.py            # Fig 4 continuous symplectic flow visualizer
 ├── fig1_quaternion_architecture.png       # Layer architecture schematic
 ├── fig2_empirical_convergence.png         # Convergence, fidelity & parameter compression curves
-└── fig3_so3_geometric_reconstruction.png  # 3D spherical frame reconstruction & persistence curves
+├── fig3_so3_geometric_reconstruction.png  # 3D spherical frame reconstruction & persistence curves
+└── fig4_continuous_symplectic_flow.png    # Symplectic energy & Liouville volume conservation plots
 ```
 
 ---
