@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Gradient Fidelity](https://img.shields.io/badge/BPTT%20Gradient%20Error-2.66e--08-brightgreen.svg)](#finite-difference-validation)
 [![Parameter Reduction](https://img.shields.io/badge/Parameter%20Compression-13.3x%20vs%20Transformer-purple.svg)](#empirical-benchmark-showdown)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/shu195/quaternion-memory-tensor/blob/main/colab_heavy_benchmark.ipynb)
 
 > **First-principles implementation of Quaternion Recurrent Neural Networks (QRNN) and Layer-Wise Non-Commutative Associative Memory Tensors (ℍ-DeltaNet).**  
 > Combines exact 4D Hamilton block-symplectic linear algebra, analytical BPTT adjoint operators, non-dissipative retention gating, and conjugate rotor unwinding for zero-drift SO(3) physical kinematics.
