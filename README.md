@@ -66,7 +66,7 @@ We benchmarked ℍ-DeltaNet against the industry-standard aerospace estimators o
 
 ![6-DOF IMU Benchmark](./fig5_imu_ekf_benchmark.png)
 
-### Flight Estimation Performance (1,000 Continuous Steps)
+### Flight Estimation Performance (Single Flight, 1,000 Steps, 20.0s Horizon)
 
 | Estimator Architecture | Mean Angular Error | Peak Error | 20s Terminal Drift | Step Latency | Drift Mitigation |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -74,8 +74,18 @@ We benchmarked ℍ-DeltaNet against the industry-standard aerospace estimators o
 | **Madgwick Filter** | 18.52° | 37.04° | 37.04° | 0.053 ms | Unmitigated (Lacks bias state) |
 | **Extended Kalman Filter (EKF)** | 167.65° | 179.99° | 161.67° | 0.243 ms | Complete Filter Divergence |
 
+### Google Colab Cloud GPU Monte-Carlo Audit (N = 30 Missions, 60,000 Steps, Tesla T4)
+
+To rigorously verify asymptotic drift resistance at scale, we executed an automated 30-mission Monte-Carlo stress test on Google Colab (Tesla T4 GPU, 2,000 steps / 40.0s horizon per flight, randomized aggressive maneuvers up to 5.0 rad/s and random gyro bias drift):
+
+| Estimator Architecture | Mean Error (N = 30) | Median Error | Terminal 40s Drift (t = 40s) | Drift Reduction vs Madgwick |
+| :--- | :---: | :---: | :---: | :---: |
+| **ℍ-DeltaNet (Ours)** | **54.86° ± 20.93°** | **55.82°** | **80.68° ± 37.79°** | **33.2% Less Terminal Drift** |
+| **Madgwick Filter** | 49.26° ± 18.59° | 46.08° | 120.84° ± 34.66° | Baseline (Accumulating Drift) |
+| **Extended Kalman Filter (EKF)** | 168.78° ± 0.91° | 168.86° | 169.07° ± 7.99° | Complete Divergence (52.3% worse) |
+
 - **84.6% Error Reduction vs EKF**: The Extended Kalman Filter suffered catastrophic linearization breakdown under high aerobatic dynamics and thrust spikes. ℍ-DeltaNet remains bound on the Lie manifold without linearization error.
-- **Superior Long-Horizon Drift Suppression vs Madgwick**: While Madgwick lacks a gyroscope bias state and drifts permanently over time ($37.04^\circ$ and growing), ℍ-DeltaNet's associative memory tensor $\mathbf{M}_t$ isolates time-varying sensor biases, keeping terminal drift to **31.85°**.
+- **Superior Long-Horizon Drift Suppression vs Madgwick**: While Madgwick lacks a gyroscope bias state and drifts permanently over time (120.84° at 40s), ℍ-DeltaNet's associative memory tensor $\mathbf{M}_t$ isolates time-varying sensor biases, keeping terminal drift to **80.68°** (a **33.2% drift reduction** across 30 missions).
 
 ---
 
@@ -160,6 +170,8 @@ OVERALL MAX RELATIVE ERROR: 2.66e-08
 ├── render_graphs.py                       # 300 DPI publication-grade visualization pipeline
 ├── imu_ekf_benchmark.py                   # 6-DOF IMU flight telemetry benchmark (H-DeltaNet vs EKF vs Madgwick)
 ├── render_imu_graphs.py                   # Fig 5 IMU telemetry showdown visualizer
+├── colab_heavy_flight_benchmark.py        # Cloud GPU 30-mission Monte-Carlo aerospace harness
+├── colab_heavy_benchmark.ipynb            # Google Colab 1-click cloud interactive notebook
 ├── render_symplectic_graphs.py            # Fig 4 continuous symplectic flow visualizer
 ├── fig1_quaternion_architecture.png       # Layer architecture schematic
 ├── fig2_empirical_convergence.png         # Convergence, fidelity & parameter compression curves
